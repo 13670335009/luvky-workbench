@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#7C5CFC">
+  <title>luvky专属工作台</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 左侧纵向导航栏 -->
+    <nav class="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">🦄</div>
+        <div class="logo-text">luvky</div>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item active" data-page="plan">
+          <div class="nav-icon-box">
+            <span class="nav-icon">📋</span>
+          </div>
+          <span class="nav-label">每日计划</span>
+        </li>
+        <li class="nav-item" data-page="expense">
+          <div class="nav-icon-box">
+            <span class="nav-icon">💰</span>
+          </div>
+          <span class="nav-label">每日花费</span>
+        </li>
+        <li class="nav-item" data-page="inspiration">
+          <div class="nav-icon-box">
+            <span class="nav-icon">💡</span>
+          </div>
+          <span class="nav-label">灵感记录</span>
+        </li>
+        <li class="nav-item" data-page="exercise">
+          <div class="nav-icon-box">
+            <span class="nav-icon">🏃</span>
+          </div>
+          <span class="nav-label">锻炼身体</span>
+        </li>
+        <li class="nav-item" data-page="reading">
+          <div class="nav-icon-box">
+            <span class="nav-icon">📚</span>
+          </div>
+          <span class="nav-label">每日阅读</span>
+        </li>
+      </ul>
+      <div class="sidebar-bottom">
+        <button id="resetTodayBtn" class="reset-btn" title="重置今日">🔄</button>
+        <span class="reset-label">重置今日</span>
+      </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 顶部标题栏 -->
+      <header class="top-bar">
+        <h1 class="top-title" id="topTitle">每日计划</h1>
+        <div class="top-date" id="todayDate"></div>
+      </header>
+
+      <!-- 1. 每日计划 -->
+      <section class="page active" id="page-plan">
+        <div class="summary-card">
+          <div class="summary-info">
+            <div class="summary-label">今日完成度</div>
+            <div class="summary-value" id="planRate">0%</div>
+          </div>
+          <div class="summary-chart">
+            <svg viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="#E8E0FF" stroke-width="5"/>
+              <circle id="planCircle" cx="22" cy="22" r="18" fill="none" stroke="#A78BFA" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113" transform="rotate(-90 22 22)"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card add-card">
+          <input type="text" id="planInput" class="add-input" placeholder="今天要做什么？" onkeydown="if(event.key==='Enter')addPlan()">
+          <button class="add-round-btn" onclick="addPlan()">＋</button>
+        </div>
+
+        <div class="section-title">今日任务 <span class="section-count" id="planCountBadge">0</span></div>
+        <div class="list-container" id="planList"></div>
+      </section>
+
+      <!-- 2. 每日花费 -->
+      <section class="page" id="page-expense">
+        <div class="summary-card expense-summary">
+          <div class="summary-info">
+            <div class="summary-label">今日花费</div>
+            <div class="summary-value" id="expenseToday">¥0</div>
+          </div>
+          <div class="summary-detail">
+            <div class="detail-item"><span class="detail-dot" style="background:#FDBA74"></span>本月累计 <b id="expenseMonth">¥0</b></div>
+            <div class="detail-item"><span class="detail-dot" style="background:#A78BFA"></span>今日笔数 <b id="expenseCount">0</b></div>
+          </div>
+        </div>
+
+        <div class="card add-card expense-add">
+          <input type="text" id="expenseDesc" class="add-input" placeholder="花费描述，如：午餐">
+          <input type="number" id="expenseAmount" class="add-input amount" placeholder="金额" onkeydown="if(event.key==='Enter')addExpense()">
+          <button class="add-round-btn" onclick="addExpense()">＋</button>
+        </div>
+
+        <div class="section-title">今日账单</div>
+        <div class="list-container" id="expenseList"></div>
+      </section>
+
+      <!-- 3. 灵感记录 -->
+      <section class="page" id="page-inspiration">
+        <div class="summary-card inspiration-summary">
+          <div class="summary-info">
+            <div class="summary-label">今日灵感</div>
+            <div class="summary-value" id="inspirationToday">0</div>
+          </div>
+          <div class="summary-detail">
+            <div class="detail-item"><span class="detail-dot" style="background:#F472B6"></span>累计灵感 <b id="inspirationTotal">0</b></div>
+          </div>
+        </div>
+
+        <div class="card add-card inspiration-add">
+          <textarea id="inspirationInput" class="add-textarea" placeholder="写下你的灵感、想法、感悟..." rows="2"></textarea>
+          <button class="add-round-btn" onclick="addInspiration()">＋</button>
+        </div>
+
+        <div class="section-title">灵感卡片</div>
+        <div class="list-container" id="inspirationList"></div>
+      </section>
+
+      <!-- 4. 锻炼身体 -->
+      <section class="page" id="page-exercise">
+        <div class="summary-card exercise-summary">
+          <div class="summary-info">
+            <div class="summary-label">今日运动</div>
+            <div class="summary-value"><span id="exerciseTodayMin">0</span><span class="unit">分钟</span></div>
+          </div>
+          <div class="summary-detail">
+            <div class="detail-item"><span class="detail-dot" style="background:#34D399"></span>今日次数 <b id="exerciseTodayCount">0</b></div>
+            <div class="detail-item"><span class="detail-dot" style="background:#60A5FA"></span>本周累计 <b id="exerciseWeekMin">0</b>分钟</div>
+          </div>
+        </div>
+
+        <div class="card quick-types">
+          <div class="quick-title">快捷运动</div>
+          <div class="quick-btns">
+            <button class="quick-btn" onclick="quickAddExercise('跑步',30)">🏃 跑步</button>
+            <button class="quick-btn" onclick="quickAddExercise('健身',45)">🏋️ 健身</button>
+            <button class="quick-btn" onclick="quickAddExercise('瑜伽',30)">🧘 瑜伽</button>
+            <button class="quick-btn" onclick="quickAddExercise('骑行',40)">🚴 骑行</button>
+            <button class="quick-btn" onclick="quickAddExercise('游泳',45)">🏊 游泳</button>
+            <button class="quick-btn" onclick="quickAddExercise('散步',20)">🚶 散步</button>
+          </div>
+        </div>
+
+        <div class="card add-card exercise-add">
+          <input type="text" id="exerciseType" class="add-input" placeholder="运动类型">
+          <input type="number" id="exerciseDuration" class="add-input amount" placeholder="分钟" onkeydown="if(event.key==='Enter')addExercise()">
+          <button class="add-round-btn" onclick="addExercise()">＋</button>
+        </div>
+
+        <div class="section-title">今日运动</div>
+        <div class="list-container" id="exerciseList"></div>
+      </section>
+
+      <!-- 5. 每日阅读 -->
+      <section class="page" id="page-reading">
+        <div class="summary-card reading-summary">
+          <div class="summary-info">
+            <div class="summary-label">今日阅读</div>
+            <div class="summary-value"><span id="readingTodayPages">0</span><span class="unit">页</span></div>
+          </div>
+          <div class="summary-detail">
+            <div class="detail-item"><span class="detail-dot" style="background:#FBBF24"></span>今日书目 <b id="readingTodayBooks">0</b></div>
+            <div class="detail-item"><span class="detail-dot" style="background:#A78BFA"></span>累计书目 <b id="readingTotalBooks">0</b></div>
+          </div>
+        </div>
+
+        <div class="card reading-form">
+          <input type="text" id="readingTitle" class="add-input full" placeholder="书名">
+          <div class="reading-row">
+            <input type="text" id="readingAuthor" class="add-input" placeholder="作者（选填）">
+            <input type="number" id="readingPages" class="add-input amount" placeholder="页数">
+          </div>
+          <textarea id="readingNote" class="add-textarea" placeholder="读书笔记 / 摘录 / 感悟..." rows="2"></textarea>
+          <button class="submit-btn" onclick="addReading()">记录阅读</button>
+        </div>
+
+        <div class="section-title">阅读记录</div>
+        <div class="list-container" id="readingList"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 确认弹窗 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <p class="modal-text" id="modalText">确认操作？</p>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeModal()">取消</button>
+        <button class="modal-btn confirm" id="modalConfirmBtn">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
