@@ -158,18 +158,17 @@ function delExpense(id) {
 }
 
 function renderExpenses() {
-  const todayExp = expenses.filter(e => e.date === todayStr());
   const list = $('expenseList');
 
-  if (todayExp.length === 0) {
-    list.innerHTML = emptyHTML('🪙', '今天还没有花费记录');
+  if (expenses.length === 0) {
+    list.innerHTML = emptyHTML('🪙', '还没有花费记录');
   } else {
-    list.innerHTML = todayExp.map(e => `
+    list.innerHTML = expenses.map(e => `
       <div class="list-item">
         <div class="item-check" style="cursor:default;border-color:#FDBA74;background:#FFFBEB;color:#D97706">¥</div>
         <div class="item-main">
           <div class="item-title">${escapeHtml(e.desc)}</div>
-          <div class="item-desc">${e.time}</div>
+          <div class="item-desc">${e.date} ${e.time}</div>
         </div>
         <span class="item-tag warning">¥${e.amount.toFixed(2)}</span>
         <button class="del-btn" onclick="delExpense(${e.id})">✕</button>
@@ -177,6 +176,7 @@ function renderExpenses() {
     `).join('');
   }
 
+  const todayExp = expenses.filter(e => e.date === todayStr());
   const todaySum = todayExp.reduce((s, e) => s + e.amount, 0);
   const month = todayStr().slice(0, 7);
   const monthSum = expenses.filter(e => e.date.startsWith(month)).reduce((s, e) => s + e.amount, 0);
@@ -209,23 +209,23 @@ function delInspiration(id) {
 }
 
 function renderInspirations() {
-  const todayIns = inspirations.filter(i => i.date === todayStr());
   const list = $('inspirationList');
 
-  if (todayIns.length === 0) {
-    list.innerHTML = emptyHTML('💭', '今天还没有灵感记录');
+  if (inspirations.length === 0) {
+    list.innerHTML = emptyHTML('💭', '还没有灵感记录');
   } else {
-    list.innerHTML = todayIns.map(i => `
+    list.innerHTML = inspirations.map(i => `
       <div class="list-item vertical">
         <div class="item-text">${escapeHtml(i.text)}</div>
         <div class="item-meta">
-          <span>${i.time}</span>
+          <span>${i.date} ${i.time}</span>
           <button class="del-btn" onclick="delInspiration(${i.id})">✕</button>
         </div>
       </div>
     `).join('');
   }
 
+  const todayIns = inspirations.filter(i => i.date === todayStr());
   $('inspirationToday').textContent = todayIns.length;
   $('inspirationTotal').textContent = inspirations.length;
 }
@@ -264,18 +264,17 @@ function delExercise(id) {
 }
 
 function renderExercises() {
-  const todayEx = exercises.filter(e => e.date === todayStr());
   const list = $('exerciseList');
 
-  if (todayEx.length === 0) {
-    list.innerHTML = emptyHTML('😴', '今天还没有运动，动起来吧');
+  if (exercises.length === 0) {
+    list.innerHTML = emptyHTML('😴', '还没有运动记录，动起来吧');
   } else {
-    list.innerHTML = todayEx.map(e => `
+    list.innerHTML = exercises.map(e => `
       <div class="list-item">
         <div class="item-check" style="cursor:default;border-color:#34D399;background:#ECFDF5;color:#059669">🏃</div>
         <div class="item-main">
           <div class="item-title">${escapeHtml(e.type)}</div>
-          <div class="item-desc">${e.time}</div>
+          <div class="item-desc">${e.date} ${e.time}</div>
         </div>
         <span class="item-tag success">${e.duration}分钟</span>
         <button class="del-btn" onclick="delExercise(${e.id})">✕</button>
@@ -283,6 +282,7 @@ function renderExercises() {
     `).join('');
   }
 
+  const todayEx = exercises.filter(e => e.date === todayStr());
   const todayMin = todayEx.reduce((s, e) => s + e.duration, 0);
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
   const weekStr = weekAgo.toISOString().slice(0, 10);
@@ -323,26 +323,26 @@ function delReading(id) {
 }
 
 function renderReadings() {
-  const todayRd = readings.filter(r => r.date === todayStr());
   const list = $('readingList');
 
-  if (todayRd.length === 0) {
-    list.innerHTML = emptyHTML('📚', '今天还没有阅读记录');
+  if (readings.length === 0) {
+    list.innerHTML = emptyHTML('📚', '还没有阅读记录');
   } else {
-    list.innerHTML = todayRd.map(r => `
+    list.innerHTML = readings.map(r => `
       <div class="list-item vertical">
         <div class="item-main" style="width:100%">
           <div class="item-title">${escapeHtml(r.title)}${r.author ? `<span style="color:var(--text-light);font-size:13px;font-weight:500"> · ${escapeHtml(r.author)}</span>` : ''}</div>
           ${r.note ? `<div class="item-text" style="margin-top:4px;color:var(--text-sub);font-size:14px">${escapeHtml(r.note)}</div>` : ''}
         </div>
         <div class="item-meta">
-          <span>📄 ${r.pages}页 · ${r.time}</span>
+          <span>📄 ${r.pages}页 · ${r.date} ${r.time}</span>
           <button class="del-btn" onclick="delReading(${r.id})">✕</button>
         </div>
       </div>
     `).join('');
   }
 
+  const todayRd = readings.filter(r => r.date === todayStr());
   const todayPages = todayRd.reduce((s, r) => s + r.pages, 0);
   const todayBooks = new Set(todayRd.map(r => r.title)).size;
   const totalBooks = new Set(readings.map(r => r.title)).size;
@@ -355,16 +355,12 @@ function renderReadings() {
 // 每日重置
 // ========================================================
 $('resetTodayBtn').addEventListener('click', () => {
-  confirmModal('确认重置今日所有数据？今日记录将被清空，累计统计不受影响。', () => {
+  confirmModal('确认重置今日计划？（其他累积记录不受影响）', () => {
     const today = todayStr();
     plans = plans.filter(p => p.date !== today);
-    expenses = expenses.filter(e => e.date !== today);
-    inspirations = inspirations.filter(i => i.date !== today);
-    exercises = exercises.filter(e => e.date !== today);
-    readings = readings.filter(r => r.date !== today);
-    savePlans(); saveExpenses(); saveInspirations(); saveExercises(); saveReadings();
-    renderAll();
-    toast('今日数据已重置 🔄');
+    savePlans();
+    renderPlans();
+    toast('今日计划已重置 🔄');
   });
 });
 
