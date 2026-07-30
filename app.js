@@ -352,6 +352,71 @@ function renderReadings() {
 }
 
 // ========================================================
+// 历史计划查看
+// ========================================================
+let historyExpanded = false;
+
+function toggleHistory() {
+  historyExpanded = !historyExpanded;
+  const container = $('historyContainer');
+  const btn = $('historyToggle');
+  if (historyExpanded) {
+    renderHistory();
+    container.style.display = 'block';
+    btn.textContent = '收起 ▲';
+  } else {
+    container.style.display = 'none';
+    btn.textContent = '展开 ▼';
+  }
+}
+
+function renderHistory() {
+  const today = todayStr();
+  // 按日期分组，排除今天
+  const groups = {};
+  plans.filter(p => p.date !== today).forEach(p => {
+    if (!groups[p.date]) groups[p.date] = [];
+    groups[p.date].push(p);
+  });
+
+  const dates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+  const container = $('historyContainer');
+
+  if (dates.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">📅</span><span class="empty-text">还没有历史计划</span></div>`;
+    return;
+  }
+
+  container.innerHTML = dates.map(date => {
+    const items = groups[date];
+    const done = items.filter(p => p.done).length;
+    // 格式化日期显示
+    const d = new Date(date);
+    const weekdays = ['日','一','二','三','四','五','六'];
+    const dateLabel = `${d.getMonth()+1}月${d.getDate()}日 周${weekdays[d.getDay()]}`;
+    return `
+      <div class="history-group">
+        <div class="history-date">
+          ${dateLabel}
+          <span class="history-stat">${done}/${items.length} 完成</span>
+        </div>
+        <div class="history-list">
+          ${items.map(p => `
+            <div class="list-item ${p.done ? 'done' : ''}">
+              <div class="item-check ${p.done ? 'checked' : ''}" style="cursor:default"></div>
+              <div class="item-main">
+                <div class="item-title">${escapeHtml(p.text)}</div>
+              </div>
+              <span class="item-tag ${p.done ? 'success' : ''}">${p.done ? '已完成' : '未完成'}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ========================================================
 // 每日重置
 // ========================================================
 $('resetTodayBtn').addEventListener('click', () => {
