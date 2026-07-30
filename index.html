@@ -65,9 +65,20 @@
 
       <!-- 1. 每日计划 -->
       <section class="page active" id="page-plan">
+        <!-- 日期选择器 -->
+        <div class="card date-picker-card">
+          <button class="date-nav-btn" onclick="changePlanDate(-1)">‹</button>
+          <div class="date-picker-center">
+            <input type="date" id="planDateInput" class="date-input" onchange="changePlanDateDirect()">
+            <div class="date-display-text" id="planDateDisplay"></div>
+          </div>
+          <button class="date-nav-btn" onclick="changePlanDate(1)">›</button>
+          <button class="today-btn" onclick="goTodayPlan()">今天</button>
+        </div>
+
         <div class="summary-card">
           <div class="summary-info">
-            <div class="summary-label">今日完成度</div>
+            <div class="summary-label" id="planRateLabel">今日完成度</div>
             <div class="summary-value" id="planRate">0%</div>
           </div>
           <div class="summary-chart">
@@ -78,33 +89,47 @@
           </div>
         </div>
 
-        <div class="card add-card">
+        <div class="card add-card" id="planAddCard">
           <input type="text" id="planInput" class="add-input" placeholder="今天要做什么？" onkeydown="if(event.key==='Enter')addPlan()">
           <button class="add-round-btn" onclick="addPlan()">＋</button>
         </div>
 
-        <div class="section-title">今日任务 <span class="section-count" id="planCountBadge">0</span></div>
-        <div class="list-container" id="planList"></div>
-
-        <!-- 历史计划 -->
-        <div class="section-title" style="margin-top:24px">
-          历史计划
-          <button class="history-toggle" id="historyToggle" onclick="toggleHistory()">展开 ▼</button>
+        <div class="section-title">
+          <span id="planListTitle">今日任务</span>
+          <span class="section-count" id="planCountBadge">0</span>
         </div>
-        <div class="history-container" id="historyContainer" style="display:none"></div>
+        <div class="list-container" id="planList"></div>
       </section>
 
       <!-- 2. 每日花费 -->
       <section class="page" id="page-expense">
+        <!-- 月度选择器 -->
+        <div class="card date-picker-card">
+          <button class="date-nav-btn" onclick="changeExpenseMonth(-1)">‹</button>
+          <div class="date-picker-center">
+            <div class="date-display-text" id="expenseMonthDisplay"></div>
+          </div>
+          <button class="date-nav-btn" onclick="changeExpenseMonth(1)">›</button>
+          <button class="today-btn" onclick="goCurrentMonth()">本月</button>
+        </div>
+
+        <!-- 月度统计 -->
         <div class="summary-card expense-summary">
           <div class="summary-info">
-            <div class="summary-label">今日花费</div>
-            <div class="summary-value" id="expenseToday">¥0</div>
+            <div class="summary-label" id="expenseMonthLabel">本月花费</div>
+            <div class="summary-value" id="expenseMonthTotal">¥0</div>
           </div>
           <div class="summary-detail">
-            <div class="detail-item"><span class="detail-dot" style="background:#FDBA74"></span>本月累计 <b id="expenseMonth">¥0</b></div>
-            <div class="detail-item"><span class="detail-dot" style="background:#A78BFA"></span>今日笔数 <b id="expenseCount">0</b></div>
+            <div class="detail-item"><span class="detail-dot" style="background:#FDBA74"></span>本月笔数 <b id="expenseMonthCount">0</b></div>
+            <div class="detail-item"><span class="detail-dot" style="background:#A78BFA"></span>日均 <b id="expenseDailyAvg">¥0</b></div>
           </div>
+        </div>
+
+        <!-- 日期筛选 -->
+        <div class="card date-filter-card">
+          <span class="filter-label">按日期筛选：</span>
+          <input type="date" id="expenseDateFilter" class="date-input small" onchange="filterExpenseByDate()">
+          <button class="clear-filter-btn" onclick="clearExpenseFilter()">清除</button>
         </div>
 
         <div class="card add-card expense-add">
@@ -113,7 +138,10 @@
           <button class="add-round-btn" onclick="addExpense()">＋</button>
         </div>
 
-        <div class="section-title">今日账单</div>
+        <div class="section-title">
+          <span id="expenseListTitle">账单记录</span>
+          <span class="section-count" id="expenseCountBadge">0</span>
+        </div>
         <div class="list-container" id="expenseList"></div>
       </section>
 
@@ -216,6 +244,6 @@
   <!-- Toast 提示 -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=20260731"></script>
+  <script src="app.js?v=20260731b"></script>
 </body>
 </html>

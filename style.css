@@ -542,7 +542,93 @@ body {
 .page::-webkit-scrollbar { width: 4px; }
 .page::-webkit-scrollbar-thumb { background: var(--primary-soft); border-radius: 10px; }
 
-/* ===== 历史计划 ===== */
+/* ===== 日期选择器 ===== */
+.date-picker-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+.date-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.date-nav-btn:hover { background: var(--primary); color: #fff; }
+.date-picker-center {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.date-input {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+}
+.date-display-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.today-btn {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.today-btn:hover { background: var(--primary-dark); }
+
+/* 日期筛选 */
+.date-filter-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.filter-label { font-size: 13px; color: var(--text-sub); font-weight: 600; white-space: nowrap; }
+.date-input.small { font-size: 14px; font-weight: 600; text-align: left; flex: 1; }
+.clear-filter-btn {
+  border: none;
+  background: #FEE2E2;
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.clear-filter-btn:hover { background: var(--danger); color: #fff; }
+
+/* ===== 历史计划（保留） ===== */
 .history-toggle {
   margin-left: auto;
   background: var(--primary-bg);
@@ -620,6 +706,14 @@ body {
 
   .quick-btns { grid-template-columns: repeat(2, 1fr); }
   .quick-btn { font-size: 12px; padding: 9px 4px; }
+
+  .date-picker-card { padding: 8px 10px; gap: 6px; }
+  .date-nav-btn { width: 32px; height: 32px; font-size: 18px; }
+  .date-display-text, .date-input { font-size: 14px; }
+  .today-btn { padding: 5px 10px; font-size: 11px; }
+  .date-filter-card { padding: 8px 10px; gap: 6px; flex-wrap: wrap; }
+  .filter-label { font-size: 12px; }
+  .clear-filter-btn { padding: 5px 10px; font-size: 11px; }
 
   .item-title { font-size: 15px; }
   .item-tag { font-size: 12px; padding: 5px 10px; }
