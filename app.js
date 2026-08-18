@@ -110,7 +110,7 @@ function addPlan() {
   const input = $('planInput');
   const text = input.value.trim();
   if (!text) return toast('请输入计划内容');
-  plans.unshift({ id: Date.now(), text, done: false, date: currentPlanDate });
+  plans.unshift({ id: Date.now(), text, done: false, date: currentPlanDate, note: '' });
   input.value = '';
   savePlans();
   renderPlans();
@@ -122,8 +122,33 @@ function togglePlan(id) {
   if (p) { p.done = !p.done; savePlans(); renderPlans(); }
 }
 
+// 备注相关
+let noteEditingId = null; // 当前正在编辑备注的任务 id
+
+function toggleNoteEdit(id) {
+  if (noteEditingId === id) {
+    noteEditingId = null; // 再点一次收起
+  } else {
+    noteEditingId = id;
+  }
+  renderPlans();
+}
+
+function saveNote(id) {
+  const p = plans.find(x => x.id === id);
+  const input = $('note-input-' + id);
+  if (p && input) {
+    p.note = input.value.trim();
+    savePlans();
+  }
+  noteEditingId = null;
+  renderPlans();
+  toast('备注已保存 📝');
+}
+
 function delPlan(id) {
   plans = plans.filter(x => x.id !== id);
+  if (noteEditingId === id) noteEditingId = null;
   savePlans();
   renderPlans();
   toast('已删除');
@@ -147,17 +172,27 @@ function renderPlans() {
   if (dayPlans.length === 0) {
     list.innerHTML = emptyHTML('🌙', isToday ? '今天还没有计划，添加一个吧' : '该日期暂无计划');
   } else {
-    list.innerHTML = dayPlans.map(p => `
-      <div class="list-item ${p.done ? 'done' : ''}">
+    list.innerHTML = dayPlans.map(p => {
+      const editing = noteEditingId === p.id;
+      return `
+      <div class="list-item plan-with-note ${p.done ? 'done' : ''}">
         <div class="item-check ${p.done ? 'checked' : ''}" ${isToday ? `onclick="togglePlan(${p.id})"` : 'style="cursor:default"'}></div>
         <div class="item-main">
           <div class="item-title">${escapeHtml(p.text)}</div>
           <div class="item-desc">${p.done ? '已完成，真棒！' : '待完成'}</div>
+          ${p.note && !editing ? `<div class="item-note">📝 ${escapeHtml(p.note)}</div>` : ''}
+          ${editing ? `
+            <div class="note-edit-area">
+              <input type="text" id="note-input-${p.id}" class="note-input" value="${escapeHtml(p.note)}" placeholder="输入备注..." onkeydown="if(event.key==='Enter')saveNote(${p.id})">
+              <button class="note-save-btn" onclick="saveNote(${p.id})">保存</button>
+            </div>
+          ` : ''}
         </div>
         <span class="item-tag ${p.done ? 'success' : ''}">${p.done ? '已完成' : '待办'}</span>
+        ${isToday ? `<button class="note-btn ${p.note ? 'has-note' : ''}" onclick="toggleNoteEdit(${p.id})" title="备注">📝</button>` : ''}
         ${isToday ? `<button class="del-btn" onclick="delPlan(${p.id})">✕</button>` : ''}
       </div>
-    `).join('');
+    `;}).join('');
   }
 
   const total = dayPlans.length;

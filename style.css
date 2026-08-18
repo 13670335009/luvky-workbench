@@ -628,6 +628,75 @@ body {
 }
 .clear-filter-btn:hover { background: var(--danger); color: #fff; }
 
+/* ===== 任务备注 ===== */
+.plan-with-note { align-items: flex-start; }
+.plan-with-note .item-check { margin-top: 2px; }
+.plan-with-note .del-btn, .plan-with-note .note-btn, .plan-with-note .item-tag { margin-top: 2px; }
+
+.item-note {
+  font-size: 13px;
+  color: var(--primary-dark);
+  background: var(--primary-bg);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  line-height: 1.5;
+  word-break: break-word;
+  display: block;
+}
+
+.note-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary-bg);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  filter: grayscale(1) opacity(0.55);
+}
+.note-btn.has-note { filter: none; }
+.note-btn:hover { background: var(--primary-soft); transform: scale(1.1); }
+
+.note-edit-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+.note-input {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  background: #FAFAFF;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-main);
+  outline: none;
+  font-family: inherit;
+  transition: all .2s;
+}
+.note-input:focus { border-color: var(--primary-light); background: #fff; }
+.note-save-btn {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.note-save-btn:hover { background: var(--primary-dark); }
+
 /* ===== 历史计划（保留） ===== */
 .history-toggle {
   margin-left: auto;
