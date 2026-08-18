@@ -628,6 +628,14 @@ body {
 }
 .clear-filter-btn:hover { background: var(--danger); color: #fff; }
 
+/* 花费表单 */
+.expense-form-card { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.expense-form-row { display: flex; align-items: center; gap: 10px; }
+.expense-form-row .add-input { flex: 1; }
+.expense-form-row .add-input.amount { max-width: 100px; text-align: right; }
+.form-label { font-size: 13px; color: var(--text-sub); font-weight: 600; white-space: nowrap; }
+.expense-form-row .add-input[type="date"] { max-width: 160px; }
+
 /* ===== 任务备注 ===== */
 .plan-with-note { align-items: flex-start; }
 .plan-with-note .item-check { margin-top: 2px; }

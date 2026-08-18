@@ -253,11 +253,17 @@ function clearExpenseFilter() {
 function addExpense() {
   const desc = $('expenseDesc').value.trim();
   const amount = parseFloat($('expenseAmount').value);
+  const date = $('expenseDate').value || todayStr();
   if (!desc) return toast('请输入花费描述');
   if (!amount || amount < 0) return toast('请输入有效金额');
-  expenses.unshift({ id: Date.now(), desc, amount, date: todayStr(), time: nowTime() });
+  expenses.unshift({ id: Date.now(), desc, amount, date, time: nowTime() });
   $('expenseDesc').value = '';
   $('expenseAmount').value = '';
+  $('expenseDate').value = todayStr();
+  // 跳转到该日期所属的月份
+  currentExpenseMonth = date.slice(0, 7);
+  expenseDateFilter = '';
+  $('expenseDateFilter').value = '';
   saveExpenses();
   renderExpenses();
   toast('花费记录成功');
@@ -499,6 +505,10 @@ $('resetTodayBtn').addEventListener('click', () => {
 // 初始化
 // ========================================================
 function renderAll() {
+  // 初始化日期默认值
+  const today = todayStr();
+  $('planDateInput').value = today;
+  $('expenseDate').value = today;
   renderPlans();
   renderExpenses();
   renderInspirations();

@@ -132,10 +132,16 @@
           <button class="clear-filter-btn" onclick="clearExpenseFilter()">清除</button>
         </div>
 
-        <div class="card add-card expense-add">
-          <input type="text" id="expenseDesc" class="add-input" placeholder="花费描述，如：午餐">
-          <input type="number" id="expenseAmount" class="add-input amount" placeholder="金额" onkeydown="if(event.key==='Enter')addExpense()">
-          <button class="add-round-btn" onclick="addExpense()">＋</button>
+        <div class="card expense-form-card">
+          <div class="expense-form-row">
+            <input type="text" id="expenseDesc" class="add-input" placeholder="花费描述，如：午餐">
+            <input type="number" id="expenseAmount" class="add-input amount" placeholder="金额" onkeydown="if(event.key==='Enter')addExpense()">
+          </div>
+          <div class="expense-form-row">
+            <label class="form-label">花费日期</label>
+            <input type="date" id="expenseDate" class="add-input">
+            <button class="add-round-btn" onclick="addExpense()">＋</button>
+          </div>
         </div>
 
         <div class="section-title">
@@ -244,6 +250,6 @@
   <!-- Toast 提示 -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=20260818"></script>
+  <script src="app.js?v=20260818b"></script>
 </body>
 </html>
