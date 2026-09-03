@@ -125,6 +125,12 @@
           </div>
         </div>
 
+        <!-- 分类月度汇总 -->
+        <div class="card category-stats-card">
+          <div class="category-stats-title">📊 分类汇总 <span id="categoryStatsMonth"></span></div>
+          <div class="category-stats-list" id="categoryStatsList"></div>
+        </div>
+
         <!-- 日期筛选 -->
         <div class="card date-filter-card">
           <span class="filter-label">按日期筛选：</span>
@@ -136,6 +142,19 @@
           <div class="expense-form-row">
             <input type="text" id="expenseDesc" class="add-input" placeholder="花费描述，如：午餐">
             <input type="number" id="expenseAmount" class="add-input amount" placeholder="金额" onkeydown="if(event.key==='Enter')addExpense()">
+          </div>
+          <div class="category-picker" id="categoryPicker">
+            <button class="cat-btn" data-cat="零食" onclick="selectCategory('零食')">🍿 零食</button>
+            <button class="cat-btn" data-cat="一日三餐" onclick="selectCategory('一日三餐')">🍚 一日三餐</button>
+            <button class="cat-btn" data-cat="周末游玩" onclick="selectCategory('周末游玩')">🎡 周末游玩</button>
+            <button class="cat-btn" data-cat="生活用品" onclick="selectCategory('生活用品')">🧴 生活用品</button>
+            <button class="cat-btn" data-cat="衣服" onclick="selectCategory('衣服')">👗 衣服</button>
+            <button class="cat-btn" data-cat="生日节日" onclick="selectCategory('生日节日')">🎂 生日节日</button>
+            <button class="cat-btn" data-cat="其他" onclick="selectCategory('其他')">📦 其他</button>
+          </div>
+          <div class="expense-form-row" id="categoryNoteRow" style="display:none">
+            <label class="form-label">分类备注</label>
+            <input type="text" id="categoryNoteInput" class="add-input" placeholder="补充说明，如：宠物用品">
           </div>
           <div class="expense-form-row">
             <label class="form-label">花费日期</label>
@@ -250,6 +269,6 @@
   <!-- Toast 提示 -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=20260818b"></script>
+  <script src="app.js?v=20260904"></script>
 </body>
 </html>

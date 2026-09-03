@@ -250,16 +250,42 @@ function clearExpenseFilter() {
   renderExpenses();
 }
 
+// 分类配置
+const CATEGORIES = {
+  '零食':     { icon: '🍿', color: '#F472B6' },
+  '一日三餐': { icon: '🍚', color: '#FDBA74' },
+  '周末游玩': { icon: '🎡', color: '#34D399' },
+  '生活用品': { icon: '🧴', color: '#60A5FA' },
+  '衣服':     { icon: '👗', color: '#A78BFA' },
+  '生日节日': { icon: '🎂', color: '#F87171' },
+  '其他':     { icon: '📦', color: '#94A3B8' }
+};
+
+let selectedCategory = '一日三餐'; // 默认分类
+
+function selectCategory(cat) {
+  selectedCategory = cat;
+  // 更新按钮选中态
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.cat === cat);
+  });
+  // "其他"显示备注输入框
+  $('categoryNoteRow').style.display = cat === '其他' ? 'flex' : 'none';
+}
+
 function addExpense() {
   const desc = $('expenseDesc').value.trim();
   const amount = parseFloat($('expenseAmount').value);
   const date = $('expenseDate').value || todayStr();
+  const category = selectedCategory;
+  const categoryNote = category === '其他' ? ($('categoryNoteInput').value.trim()) : '';
   if (!desc) return toast('请输入花费描述');
   if (!amount || amount < 0) return toast('请输入有效金额');
-  expenses.unshift({ id: Date.now(), desc, amount, date, time: nowTime() });
+  expenses.unshift({ id: Date.now(), desc, amount, date, time: nowTime(), category, categoryNote });
   $('expenseDesc').value = '';
   $('expenseAmount').value = '';
   $('expenseDate').value = todayStr();
+  $('categoryNoteInput').value = '';
   // 跳转到该日期所属的月份
   currentExpenseMonth = date.slice(0, 7);
   expenseDateFilter = '';
@@ -292,6 +318,9 @@ function renderExpenses() {
   const avg = days ? monthSum / days : 0;
   $('expenseDailyAvg').textContent = '¥' + avg.toFixed(1);
 
+  // ===== 分类月度汇总 =====
+  renderCategoryStats(monthExp);
+
   // 列表筛选：有日期筛选就用筛选日期，否则显示当月全部
   let displayExp;
   let listTitle;
@@ -308,18 +337,63 @@ function renderExpenses() {
   if (displayExp.length === 0) {
     list.innerHTML = emptyHTML('🪙', expenseDateFilter ? '该日期无花费记录' : '本月还没有花费记录');
   } else {
-    list.innerHTML = displayExp.map(e => `
+    list.innerHTML = displayExp.map(e => {
+      const cat = e.category || '未分类';
+      const cfg = CATEGORIES[cat];
+      const icon = cfg ? cfg.icon : '❓';
+      const color = cfg ? cfg.color : '#94A3B8';
+      const catLabel = cat === '其他' && e.categoryNote ? `${icon} ${escapeHtml(e.categoryNote)}` : `${icon} ${cat}`;
+      return `
       <div class="list-item">
-        <div class="item-check" style="cursor:default;border-color:#FDBA74;background:#FFFBEB;color:#D97706">¥</div>
+        <div class="item-check" style="cursor:default;border-color:${color}55;background:${color}22;color:${color}">${icon}</div>
         <div class="item-main">
           <div class="item-title">${escapeHtml(e.desc)}</div>
           <div class="item-desc">${e.date} ${e.time}</div>
         </div>
+        <span class="cat-tag" style="background:${color}1A;color:${color}">${catLabel}</span>
         <span class="item-tag warning">¥${e.amount.toFixed(2)}</span>
         <button class="del-btn" onclick="delExpense(${e.id})">✕</button>
       </div>
-    `).join('');
+    `;}).join('');
   }
+}
+
+// 分类月度汇总渲染
+function renderCategoryStats(monthExp) {
+  $('categoryStatsMonth').textContent = '· ' + formatMonthLabel(currentExpenseMonth).replace('（本月）','');
+  const stats = {};
+  monthExp.forEach(e => {
+    const cat = e.category || '未分类';
+    if (!stats[cat]) stats[cat] = 0;
+    stats[cat] += e.amount;
+  });
+
+  const entries = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+  const container = $('categoryStatsList');
+
+  if (entries.length === 0) {
+    container.innerHTML = `<div class="cat-stat-empty">本月暂无分类数据</div>`;
+    return;
+  }
+
+  const total = monthExp.reduce((s, e) => s + e.amount, 0);
+  container.innerHTML = entries.map(([cat, sum]) => {
+    const cfg = CATEGORIES[cat];
+    const icon = cfg ? cfg.icon : '❓';
+    const color = cfg ? cfg.color : '#94A3B8';
+    const pct = total ? Math.round(sum / total * 100) : 0;
+    return `
+      <div class="cat-stat-row">
+        <span class="cat-stat-icon" style="background:${color}1A;color:${color}">${icon}</span>
+        <span class="cat-stat-name">${cat}</span>
+        <div class="cat-stat-bar-wrap">
+          <div class="cat-stat-bar" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <span class="cat-stat-pct" style="color:${color}">${pct}%</span>
+        <span class="cat-stat-amount">¥${sum.toFixed(0)}</span>
+      </div>
+    `;
+  }).join('');
 }
 
 // ========================================================
@@ -509,6 +583,8 @@ function renderAll() {
   const today = todayStr();
   $('planDateInput').value = today;
   $('expenseDate').value = today;
+  // 初始化默认分类
+  selectCategory('一日三餐');
   renderPlans();
   renderExpenses();
   renderInspirations();
