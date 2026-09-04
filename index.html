@@ -278,6 +278,7 @@
         <button class="data-action-btn export" onclick="exportData()">📤 导出全部数据</button>
         <button class="data-action-btn import" onclick="document.getElementById('importFile').click()">📥 从备份恢复</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="data-action-btn" onclick="openPasswordPanel()">🔐 修改密码</button>
         <button class="data-action-btn danger" onclick="wipeAllData()">🗑 清空所有数据</button>
       </div>
       <div class="data-import-area" id="dataImportArea" style="display:none">
@@ -288,15 +289,39 @@
           <button class="modal-btn confirm" onclick="importDataFromText()">恢复</button>
         </div>
       </div>
+      <div class="data-import-area" id="passwordPanel" style="display:none">
+        <h3 class="data-sub-title">🔐 密码设置</h3>
+        <input type="password" id="oldPassword" class="add-input" placeholder="当前密码（首次设置留空）">
+        <input type="password" id="newPassword" class="add-input" placeholder="新密码（至少4位）" style="margin-top:8px">
+        <input type="password" id="confirmPassword" class="add-input" placeholder="确认新密码" style="margin-top:8px">
+        <div class="modal-actions" style="margin-top:12px">
+          <button class="modal-btn cancel" onclick="closePasswordPanel()">取消</button>
+          <button class="modal-btn confirm" onclick="changePassword()">保存</button>
+        </div>
+        <button class="data-link-btn" onclick="removePassword()">取消密码保护</button>
+      </div>
       <div class="modal-actions" style="margin-top:8px">
         <button class="modal-btn cancel" onclick="closeDataModal()">关闭</button>
       </div>
     </div>
   </div>
 
+  <!-- 密码锁屏 -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-container">
+      <div class="lock-avatar">🦄</div>
+      <h1 class="lock-title">luvky专属工作台</h1>
+      <p class="lock-subtitle" id="lockSubtitle">请输入密码解锁</p>
+      <div class="lock-error" id="lockError"></div>
+      <input type="password" id="lockPassword" class="lock-input" placeholder="请输入密码" onkeydown="if(event.key==='Enter')unlockApp()">
+      <button class="lock-btn" onclick="unlockApp()">🔓 解锁</button>
+      <div class="lock-hint" id="lockHint"></div>
+    </div>
+  </div>
+
   <!-- Toast 提示 -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=20260904b"></script>
+  <script src="app.js?v=20260904c"></script>
 </body>
 </html>

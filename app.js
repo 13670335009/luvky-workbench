@@ -690,4 +690,140 @@ function wipeAllData() {
     toast('已清空所有数据');
   });
 }
+
+// ========================================================
+// 密码锁屏
+// ========================================================
+const PWD_KEY = 'luvky_pwd_hash';
+const PWD_FAIL_KEY = 'luvky_pwd_fail';
+const PWD_LOCKOUT_KEY = 'luvky_pwd_lockout';
+const MAX_FAILS = 5;
+const LOCKOUT_MIN = 5;
+
+// SHA-256 哈希（用 Web Crypto API）
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function hasPassword() {
+  return !!localStorage.getItem(PWD_KEY);
+}
+
+function isLockedOut() {
+  const until = parseInt(localStorage.getItem(PWD_LOCKOUT_KEY) || '0');
+  if (Date.now() < until) {
+    const remain = Math.ceil((until - Date.now()) / 1000 / 60);
+    return remain;
+  }
+  return 0;
+}
+
+async function initLockScreen() {
+  if (!hasPassword()) return; // 没设密码不显示锁屏
+  // 检查锁定
+  const lockRemain = isLockedOut();
+  if (lockRemain > 0) {
+    $('lockPassword').disabled = true;
+    $('lockBtn').disabled = true;
+    $('lockHint').textContent = `尝试过多，${lockRemain} 分钟后重试`;
+  }
+  $('lockScreen').classList.add('show');
+  setTimeout(() => $('lockPassword').focus(), 100);
+}
+
+async function unlockApp() {
+  const pwd = $('lockPassword').value;
+  if (!pwd) return showLockError('请输入密码');
+
+  // 锁定状态检查
+  if (isLockedOut() > 0) {
+    const remain = isLockedOut();
+    return showLockError(`已被锁定，请 ${remain} 分钟后再试`);
+  }
+
+  const hash = await sha256(pwd);
+  const saved = localStorage.getItem(PWD_KEY);
+  if (hash === saved) {
+    // 成功：清除失败记录，隐藏锁屏
+    localStorage.removeItem(PWD_FAIL_KEY);
+    localStorage.removeItem(PWD_LOCKOUT_KEY);
+    $('lockScreen').classList.remove('show');
+    $('lockPassword').value = '';
+    $('lockError').textContent = '';
+  } else {
+    // 失败
+    let fails = parseInt(localStorage.getItem(PWD_FAIL_KEY) || '0') + 1;
+    localStorage.setItem(PWD_FAIL_KEY, fails);
+    if (fails >= MAX_FAILS) {
+      // 触发锁定
+      const until = Date.now() + LOCKOUT_MIN * 60 * 1000;
+      localStorage.setItem(PWD_LOCKOUT_KEY, until);
+      $('lockPassword').disabled = true;
+      $('lockBtn').disabled = true;
+      $('lockHint').textContent = `已锁定，${LOCKOUT_MIN} 分钟后重试`;
+      showLockError(`错误次数过多，已锁定 ${LOCKOUT_MIN} 分钟`);
+    } else {
+      showLockError(`密码错误（还可尝试 ${MAX_FAILS - fails} 次）`);
+    }
+    $('lockPassword').value = '';
+    $('lockPassword').focus();
+  }
+}
+
+function showLockError(msg) {
+  const el = $('lockError');
+  el.textContent = msg;
+  el.style.animation = 'none';
+  setTimeout(() => el.style.animation = 'shake 0.4s', 10);
+}
+
+// 密码管理
+function openPasswordPanel() {
+  $('passwordPanel').style.display = 'block';
+  $('oldPassword').placeholder = hasPassword() ? '当前密码' : '首次设置留空';
+}
+
+function closePasswordPanel() {
+  $('passwordPanel').style.display = 'none';
+  $('oldPassword').value = '';
+  $('newPassword').value = '';
+  $('confirmPassword').value = '';
+}
+
+async function changePassword() {
+  const oldPwd = $('oldPassword').value;
+  const newPwd = $('newPassword').value;
+  const confirmPwd = $('confirmPassword').value;
+
+  // 如果已有密码，验证旧密码
+  if (hasPassword()) {
+    if (!oldPwd) return toast('请输入当前密码');
+    const oldHash = await sha256(oldPwd);
+    if (oldHash !== localStorage.getItem(PWD_KEY)) return toast('当前密码错误');
+  }
+
+  if (!newPwd || newPwd.length < 4) return toast('新密码至少4位');
+  if (newPwd !== confirmPwd) return toast('两次输入的新密码不一致');
+
+  const newHash = await sha256(newPwd);
+  localStorage.setItem(PWD_KEY, newHash);
+  // 重置失败计数
+  localStorage.removeItem(PWD_FAIL_KEY);
+  localStorage.removeItem(PWD_LOCKOUT_KEY);
+  closePasswordPanel();
+  toast(hasPassword() ? '密码已更新 ✓' : '密码已设置 ✓ 退出后生效');
+}
+
+function removePassword() {
+  if (!hasPassword()) return toast('当前未设置密码');
+  confirmModal('确认取消密码保护？取消后任何人打开链接都能直接看到数据', () => {
+    localStorage.removeItem(PWD_KEY);
+    localStorage.removeItem(PWD_FAIL_KEY);
+    localStorage.removeItem(PWD_LOCKOUT_KEY);
+    closePasswordPanel();
+    toast('已取消密码保护');
+  });
+}
 renderAll();

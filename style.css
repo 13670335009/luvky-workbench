@@ -726,6 +726,125 @@ body {
   white-space: nowrap;
 }
 
+/* ===== 密码锁屏 ===== */
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 50%, #6D28D9 100%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  overflow: hidden;
+}
+.lock-screen.show { display: flex; animation: fadeIn .4s; }
+.lock-screen::before, .lock-screen::after {
+  content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3;
+}
+.lock-screen::before { width: 300px; height: 300px; background: var(--pink); top: -50px; right: -50px; }
+.lock-screen::after { width: 260px; height: 260px; background: var(--mint); bottom: -50px; left: -30px; }
+
+.lock-container {
+  position: relative;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  padding: 40px 32px 32px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  z-index: 1;
+}
+.lock-avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--lavender));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: 0 8px 24px rgba(255,179,198,0.5);
+}
+.lock-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+.lock-subtitle { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
+.lock-error {
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: 12px;
+  min-height: 20px;
+  font-weight: 600;
+  animation: shake 0.4s;
+}
+.lock-input {
+  width: 100%;
+  border: 2px solid var(--border);
+  background: var(--primary-bg);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 16px;
+  text-align: center;
+  color: var(--text-main);
+  outline: none;
+  font-family: inherit;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+  transition: all .2s;
+}
+.lock-input:focus { border-color: var(--primary-light); background: #fff; }
+.lock-input:disabled { opacity: 0.6; }
+.lock-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+  box-shadow: 0 6px 18px rgba(124,92,252,0.4);
+}
+.lock-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(124,92,252,0.5); }
+.lock-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.lock-hint {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-light);
+  min-height: 16px;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* 密码设置面板 */
+.data-sub-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+.data-link-btn {
+  margin-top: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px;
+  font-family: inherit;
+}
+.data-link-btn:hover { color: var(--danger); }
+
 /* ===== 数据管理弹窗 ===== */
 .data-modal { max-width: 380px; padding: 24px 22px; text-align: left; }
 .data-modal-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; text-align: center; }
