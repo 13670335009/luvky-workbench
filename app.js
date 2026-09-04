@@ -827,3 +827,4 @@ function removePassword() {
   });
 }
 renderAll();
+initLockScreen();
