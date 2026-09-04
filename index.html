@@ -50,8 +50,10 @@
         </li>
       </ul>
       <div class="sidebar-bottom">
-        <button id="resetTodayBtn" class="reset-btn" title="重置今日">🔄</button>
-        <span class="reset-label">重置今日</span>
+        <button id="dataBtn" class="reset-btn" title="数据管理" onclick="openDataModal()">💾</button>
+        <span class="reset-label">数据</span>
+        <button id="resetTodayBtn" class="reset-btn" title="重置今日" style="margin-top:6px">🔄</button>
+        <span class="reset-label">重置</span>
       </div>
     </nav>
 
@@ -266,9 +268,35 @@
     </div>
   </div>
 
+  <!-- 数据管理弹窗 -->
+  <div class="modal-overlay" id="dataModal">
+    <div class="modal data-modal">
+      <h2 class="data-modal-title">💾 数据管理</h2>
+      <p class="data-modal-desc">建议每周导出一次，备份到备忘录/微信收藏<br>防止 iOS 清理网站数据时丢失</p>
+      <div class="data-stat-grid" id="dataStatGrid"></div>
+      <div class="data-actions">
+        <button class="data-action-btn export" onclick="exportData()">📤 导出全部数据</button>
+        <button class="data-action-btn import" onclick="document.getElementById('importFile').click()">📥 从备份恢复</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="data-action-btn danger" onclick="wipeAllData()">🗑 清空所有数据</button>
+      </div>
+      <div class="data-import-area" id="dataImportArea" style="display:none">
+        <label class="form-label">或粘贴 JSON 文本恢复：</label>
+        <textarea id="importText" class="add-textarea" placeholder='{"expenses":[...],"plans":[...]}' rows="3"></textarea>
+        <div class="modal-actions" style="margin-top:10px">
+          <button class="modal-btn cancel" onclick="document.getElementById('dataImportArea').style.display='none'">取消</button>
+          <button class="modal-btn confirm" onclick="importDataFromText()">恢复</button>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:8px">
+        <button class="modal-btn cancel" onclick="closeDataModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast 提示 -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=20260904"></script>
+  <script src="app.js?v=20260904b"></script>
 </body>
 </html>

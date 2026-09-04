@@ -726,6 +726,49 @@ body {
   white-space: nowrap;
 }
 
+/* ===== 数据管理弹窗 ===== */
+.data-modal { max-width: 380px; padding: 24px 22px; text-align: left; }
+.data-modal-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; text-align: center; }
+.data-modal-desc { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 16px; line-height: 1.5; }
+.data-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.data-stat-item {
+  background: var(--primary-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.data-stat-icon { font-size: 20px; }
+.data-stat-info { display: flex; flex-direction: column; }
+.data-stat-value { font-size: 15px; font-weight: 800; color: var(--primary-dark); }
+.data-stat-label { font-size: 10px; color: var(--text-sub); }
+
+.data-actions { display: flex; flex-direction: column; gap: 8px; }
+.data-action-btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+  text-align: center;
+}
+.data-action-btn.export { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+.data-action-btn.import { background: var(--primary-bg); color: var(--primary-dark); border: 1.5px solid var(--primary-light); }
+.data-action-btn.danger { background: #FEE2E2; color: var(--danger); border: 1.5px solid #FCA5A5; }
+.data-action-btn:hover { transform: translateY(-1px); filter: brightness(0.97); }
+.data-action-btn:active { transform: translateY(0); }
+
+.data-import-area { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); }
+
 /* ===== 任务备注 ===== */
 .plan-with-note { align-items: flex-start; }
 .plan-with-note .item-check { margin-top: 2px; }

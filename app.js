@@ -591,4 +591,103 @@ function renderAll() {
   renderExercises();
   renderReadings();
 }
+
+// ========================================================
+// 数据管理：导出 / 导入 / 清空
+// ========================================================
+const DATA_KEYS = [
+  { key: 'plans', label: '计划', icon: '📋' },
+  { key: 'expenses', label: '花费', icon: '💰' },
+  { key: 'inspirations', label: '灵感', icon: '💡' },
+  { key: 'exercises', label: '锻炼', icon: '🏃' },
+  { key: 'readings', label: '阅读', icon: '📚' }
+];
+
+function openDataModal() {
+  const grid = $('dataStatGrid');
+  grid.innerHTML = DATA_KEYS.map(({ key, label, icon }) => {
+    const data = loadData(key);
+    return `
+      <div class="data-stat-item">
+        <span class="data-stat-icon">${icon}</span>
+        <div class="data-stat-info">
+          <span class="data-stat-value">${data.length} 条</span>
+          <span class="data-stat-label">${label}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  $('dataImportArea').style.display = 'none';
+  $('dataModal').classList.add('show');
+}
+
+function closeDataModal() {
+  $('dataModal').classList.remove('show');
+}
+
+function exportData() {
+  const dump = {
+    _exported: new Date().toISOString(),
+    _version: 'luvky-workbench-v3.5'
+  };
+  DATA_KEYS.forEach(({ key }) => {
+    try { dump[key] = JSON.parse(localStorage.getItem('luvky_' + key)) || []; }
+    catch { dump[key] = []; }
+  });
+  const json = JSON.stringify(dump, null, 2);
+  const text = $('importText');
+  text.value = json;
+  $('dataImportArea').style.display = 'block';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(json).then(() => {
+      toast('已复制到剪贴板 ✓ 请粘贴到备忘录保存');
+    }).catch(() => {
+      toast('已生成 JSON，请长按下方文本复制');
+    });
+  } else {
+    toast('已生成 JSON，请长按下方文本复制');
+  }
+}
+
+function importDataFromText() {
+  const text = $('importText').value.trim();
+  if (!text) return toast('请粘贴 JSON 数据');
+  try {
+    const dump = JSON.parse(text);
+    let count = 0;
+    DATA_KEYS.forEach(({ key }) => {
+      if (Array.isArray(dump[key])) {
+        localStorage.setItem('luvky_' + key, JSON.stringify(dump[key]));
+        count++;
+      }
+    });
+    closeDataModal();
+    renderAll();
+    toast(`恢复成功！已加载 ${count} 个模块的数据 ✓`);
+  } catch (e) {
+    toast('JSON 格式错误，请检查');
+  }
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    $('importText').value = e.target.result;
+    $('dataImportArea').style.display = 'block';
+    importDataFromText();
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function wipeAllData() {
+  confirmModal('确认清空所有数据？此操作不可恢复！', () => {
+    DATA_KEYS.forEach(({ key }) => localStorage.removeItem('luvky_' + key));
+    closeDataModal();
+    renderAll();
+    toast('已清空所有数据');
+  });
+}
 renderAll();
